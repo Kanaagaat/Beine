@@ -26,19 +26,23 @@ export function PricingCalculator({ locations }: PricingCalculatorProps) {
   const tCommon = useTranslations('common');
   const locale = useLocale() as 'ru' | 'kk';
   const [students, setStudents] = useState<number>(25);
-  const [pages, setPages] = useState<number>(20);
-  const [selectedLocationId, setSelectedLocationId] = useState<string>('');
+  const [pages, setPages] = useState<number>(4);
+  const [selectedLocationIds, setSelectedLocationIds] = useState<string[]>([]);
   const [addons, setAddons] = useState<Record<string, boolean>>({
     premiumCover: false,
     urgent: false,
     delivery: false,
   });
   const [pricing, setPricing] = useState<PricingResult | null>(null);
+  const [showLocationDropdown, setShowLocationDropdown] = useState(false);
 
   useEffect(() => {
-    if (selectedLocationId && students > 0 && pages > 0) {
-      const location = locations.find((l) => l.id === selectedLocationId);
-      const locationFee = location?.fee || 0;
+    if (selectedLocationIds.length > 0 && students > 0 && pages > 0) {
+      // Sum fees from all selected locations
+      const locationFee = selectedLocationIds.reduce((sum, locId) => {
+        const location = locations.find((l) => l.id === locId);
+        return sum + (location?.fee || 0);
+      }, 0);
 
       const addonList = Object.entries(addons)
         .filter(([_, enabled]) => enabled)
@@ -59,17 +63,26 @@ export function PricingCalculator({ locations }: PricingCalculatorProps) {
     } else {
       setPricing(null);
     }
-  }, [students, pages, selectedLocationId, addons, locations]);
+  }, [students, pages, selectedLocationIds, addons, locations]);
 
   const handleContact = () => {
-    if (!pricing || !selectedLocationId) return;
+    if (!pricing || selectedLocationIds.length === 0) return;
+
+    const selectedLocations = selectedLocationIds
+      .map(id => {
+        const loc = locations.find(l => l.id === id);
+        return locale === 'ru' ? loc?.nameRu : loc?.nameKk;
+      })
+      .filter(Boolean)
+      .join(', ');
 
     const message = buildInquiryMessage(
       {
         students,
         pages,
-        locationId: selectedLocationId,
+        locationId: selectedLocationIds[0],
         total: pricing.total,
+        selectedLocations,
       },
       locale
     );
@@ -115,8 +128,8 @@ export function PricingCalculator({ locations }: PricingCalculatorProps) {
                     onClick={() => setPages(pageCount)}
                     className={`px-4 py-2 rounded-lg border-2 transition-colors ${
                       pages === pageCount
-                        ? 'border-accent bg-accent text-white'
-                        : 'border-gray-300 hover:border-accent'
+                        ? 'border-brand-accent bg-brand-accent text-white'
+                        : 'border-brand-border hover:border-brand-accent'
                     }`}
                   >
                     {pageCount}
@@ -129,20 +142,73 @@ export function PricingCalculator({ locations }: PricingCalculatorProps) {
               <label className="label">
                 {t('location.label')}
               </label>
-              <select
-                value={selectedLocationId}
-                onChange={(e) => setSelectedLocationId(e.target.value)}
-                className="input"
-              >
-                <option value="">{t('location.label')}</option>
-                {locations
-                  .filter((l) => l.isActive)
-                  .map((location) => (
-                    <option key={location.id} value={location.id}>
-                      {locale === 'ru' ? location.nameRu : location.nameKk} ({formatKZT(location.fee)})
-                    </option>
-                  ))}
-              </select>
+              <div className="relative">
+                <button
+                  onClick={() => setShowLocationDropdown(!showLocationDropdown)}
+                  className="input w-full text-left flex items-center justify-between"
+                >
+                  <span>
+                    {selectedLocationIds.length === 0
+                      ? t('location.label')
+                      : `${selectedLocationIds.length} ${locale === 'ru' ? 'локация' : 'локация'} выбрано`}
+                  </span>
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                  </svg>
+                </button>
+                {showLocationDropdown && (
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-brand-border rounded-lg shadow-lg z-10">
+                    {locations
+                      .filter((l) => l.isActive)
+                      .map((location) => (
+                        <label
+                          key={location.id}
+                          className="flex items-center px-4 py-2 hover:bg-brand-surface cursor-pointer border-b border-brand-border last:border-b-0"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={selectedLocationIds.includes(location.id)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setSelectedLocationIds([...selectedLocationIds, location.id]);
+                              } else {
+                                setSelectedLocationIds(selectedLocationIds.filter(id => id !== location.id));
+                              }
+                            }}
+                            className="w-4 h-4 rounded"
+                          />
+                          <span className="ml-3 flex-1">
+                            {locale === 'ru' ? location.nameRu : location.nameKk}
+                          </span>
+                          <span className="text-brand-muted text-sm">
+                            {formatKZT(location.fee)}
+                          </span>
+                        </label>
+                      ))}
+                  </div>
+                )}
+              </div>
+              {selectedLocationIds.length > 0 && (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {selectedLocationIds.map(id => {
+                    const loc = locations.find(l => l.id === id);
+                    return (
+                      <div
+                        key={id}
+                        className="inline-flex items-center gap-2 bg-brand-surface px-3 py-1 rounded-full text-sm"
+                      >
+                        <span>{locale === 'ru' ? loc?.nameRu : loc?.nameKk}</span>
+                        <button
+                          onClick={() => setSelectedLocationIds(selectedLocationIds.filter(locId => locId !== id))}
+                          className="text-brand-muted hover:text-brand-accent"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </Card>
 
             <Card>
@@ -162,7 +228,7 @@ export function PricingCalculator({ locations }: PricingCalculatorProps) {
                           onChange={(e) =>
                             setAddons({ ...addons, [type]: e.target.checked })
                           }
-                          className="w-5 h-5 text-accent rounded focus:ring-accent"
+                          className="w-5 h-5 text-brand-accent rounded focus:ring-brand-accent"
                         />
                         <span className="ml-2">{addonLabel}</span>
                       </div>
@@ -198,7 +264,7 @@ export function PricingCalculator({ locations }: PricingCalculatorProps) {
                       <span className="font-semibold">
                         {t('summary.totalPrice')}:
                       </span>
-                      <span className="font-bold text-accent text-xl">
+                      <span className="font-bold text-brand-accent text-xl">
                         {formatKZT(pricing.total)}
                       </span>
                     </div>
@@ -211,7 +277,7 @@ export function PricingCalculator({ locations }: PricingCalculatorProps) {
                     <ul className="space-y-1 text-sm text-gray-600">
                       {t.raw('summary.includedItems').map((item: string, i: number) => (
                         <li key={i} className="flex items-start">
-                          <span className="text-accent mr-2">✓</span>
+                          <span className="text-brand-accent mr-2">✓</span>
                           {item}
                         </li>
                       ))}
@@ -224,7 +290,7 @@ export function PricingCalculator({ locations }: PricingCalculatorProps) {
                       size="lg"
                       className="w-full flex items-center justify-center gap-2"
                       onClick={handleContact}
-                      disabled={!selectedLocationId || students <= 0}
+                      disabled={selectedLocationIds.length === 0 || students <= 0}
                     >
                       <WhatsAppIcon className="h-5 w-5" />
                       {tCommon('whatsapp')}
@@ -239,7 +305,7 @@ export function PricingCalculator({ locations }: PricingCalculatorProps) {
                         variant="outline"
                         size="lg"
                         className="w-full flex items-center justify-center gap-2"
-                        disabled={!selectedLocationId || students <= 0}
+                        disabled={selectedLocationIds.length === 0 || students <= 0}
                       >
                         <TelegramIcon className="h-5 w-5" />
                         {tCommon('telegram')}

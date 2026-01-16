@@ -30,11 +30,14 @@ export function Navbar() {
   const whatsappUrl = getWhatsAppUrl(defaultMessage);
 
   return (
-    <nav className="sticky top-0 z-50 bg-white shadow-md">
+    <nav className="sticky top-0 z-50 bg-brand-bg border-b border-brand-border shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <Link href="/" className="text-xl font-bold text-accent">
-            {tCommon('appName')}
+          <Link href="/" className="flex items-center gap-2">
+            <img src="/icons/logo.svg" alt="Beine logo" className="h-8 w-8" />
+            <span className="text-xl font-bold text-brand-accent">
+              {tCommon('appName')}
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -44,15 +47,15 @@ export function Navbar() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  'text-gray-700 hover:text-accent transition-colors',
-                  pathname === item.href && 'text-accent font-semibold'
+                  'text-brand-text hover:text-brand-accent transition-colors',
+                  pathname === item.href && 'text-brand-accent font-semibold'
                 )}
               >
                 {item.label}
               </Link>
             ))}
 
-            <div className="flex items-center gap-2 ml-4 pl-4 border-l">
+            <div className="flex items-center gap-2 ml-4 pl-4 border-l border-brand-border">
               <a
                 href={whatsappUrl}
                 target="_blank"
@@ -105,7 +108,7 @@ export function Navbar() {
 
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 text-gray-700"
+              className="p-2 text-brand-text"
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -115,15 +118,15 @@ export function Navbar() {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden py-4 border-t">
+          <div className="md:hidden py-4 border-t border-brand-border">
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
                 onClick={() => setMobileMenuOpen(false)}
                 className={cn(
-                  'block py-2 text-gray-700 hover:text-accent transition-colors',
-                  pathname === item.href && 'text-accent font-semibold'
+                  'block py-2 text-brand-text hover:text-brand-accent transition-colors',
+                  pathname === item.href && 'text-brand-accent font-semibold'
                 )}
               >
                 {item.label}

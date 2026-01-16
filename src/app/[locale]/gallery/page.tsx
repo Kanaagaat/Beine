@@ -29,8 +29,8 @@ export default function GalleryPage() {
                 onClick={() => setFilter(filterType)}
                 className={`px-6 py-2 rounded-lg transition-colors ${
                   filter === filterType
-                    ? 'bg-accent text-white'
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    ? 'bg-brand-accent text-white'
+                    : 'bg-brand-surface text-brand-text hover:bg-gray-300'
                 }`}
               >
                 {t(`filter.${filterType}`)}

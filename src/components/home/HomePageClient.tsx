@@ -11,7 +11,7 @@ export function HomePageClient() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-accent to-accent-dark text-white py-20 px-4">
+      <section className="bg-gradient-to-br from-brand-accent to-brand-accentDark text-white py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
             {t('hero.title')}
@@ -43,7 +43,7 @@ export function HomePageClient() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[1, 2, 3, 4].map((step) => (
               <Card key={step} className="text-center">
-                <div className="w-12 h-12 bg-accent text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">
+                <div className="w-12 h-12 bg-brand-accent text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">
                   {step}
                 </div>
                 <h3 className="text-xl font-semibold mb-2">

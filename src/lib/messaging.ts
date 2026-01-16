@@ -9,6 +9,7 @@ export interface InquiryData {
   total: number;
   desiredDate?: string;
   comment?: string;
+  selectedLocations?: string;
 }
 
 /**
@@ -20,6 +21,7 @@ export function buildInquiryMessage(
 ): string {
   const location = getLocationById(data.locationId);
   const locationName = locale === 'ru' ? location?.nameRu || '—' : location?.nameKk || '—';
+  const locationsDisplay = data.selectedLocations || locationName;
   const totalFormatted = formatKZT(data.total);
   const dateOrDash = data.desiredDate || '—';
   const commentOrDash = data.comment || '—';
@@ -28,7 +30,7 @@ export function buildInquiryMessage(
     return `Здравствуйте! Хочу заказать виньетки/альбомы в Алматы.
 Ученики: ${data.students}
 Страниц: ${data.pages}
-Локация: ${locationName}
+Локация: ${locationsDisplay}
 Примерная стоимость: ${totalFormatted}
 Желаемая дата: ${dateOrDash}
 Комментарий: ${commentOrDash}`;
@@ -36,7 +38,7 @@ export function buildInquiryMessage(
     return `Сәлеметсіз бе! Алматыда виньетка/альбомға тапсырыс бергім келеді.
 Оқушылар саны: ${data.students}
 Беттер саны: ${data.pages}
-Локация: ${locationName}
+Локация: ${locationsDisplay}
 Шамамен құны: ${totalFormatted}
 Қалаған күн: ${dateOrDash}
 Пікір: ${commentOrDash}`;

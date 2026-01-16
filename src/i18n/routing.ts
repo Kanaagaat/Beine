@@ -17,4 +17,5 @@ export const usePathname = navigation.usePathname;
 export const useRouter = navigation.useRouter;
 
 // Type helper
-export type { Pathnames, Locale } from 'next-intl/routing';
+export type { Pathnames } from 'next-intl/routing';
+export type Locale = (typeof routing.locales)[number];

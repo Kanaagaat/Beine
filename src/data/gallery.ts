@@ -12,7 +12,7 @@ export const galleryItems: GalleryItem[] = [
     id: '1',
     imageUrl: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800',
     style: 'classic',
-    title: 'Classic Style',
+    title: 'Иподром',
   },
   {
     id: '2',

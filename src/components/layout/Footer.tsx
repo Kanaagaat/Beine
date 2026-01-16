@@ -12,13 +12,16 @@ export function Footer() {
   const whatsappUrl = getWhatsAppUrl(defaultMessage);
 
   return (
-    <footer className="bg-gray-900 text-white py-8 px-4 mt-auto">
+    <footer className="bg-brand-text text-white py-8 px-4 mt-auto">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
-            <h3 className="text-lg font-semibold mb-4">
-              {t('appName')}
-            </h3>
+            <div className="flex items-center gap-2 mb-4">
+              <img src="/icons/logo.svg" alt="Beine logo" className="h-8 w-8 invert" />
+              <h3 className="text-lg font-semibold">
+                {t('appName')}
+              </h3>
+            </div>
             <p className="text-gray-400">
               Виньетки и выпускные альбомы для классов в Алматы
             </p>

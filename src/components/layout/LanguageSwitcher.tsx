@@ -16,15 +16,15 @@ export function LanguageSwitcher() {
     <div className="flex gap-2">
       <button
         onClick={() => switchLocale('ru')}
-        className={locale === 'ru' ? 'font-semibold text-accent' : 'text-gray-600 hover:text-accent'}
+        className={locale === 'ru' ? 'font-semibold text-brand-accent' : 'text-brand-muted hover:text-brand-accent'}
         aria-label="Switch to Russian"
       >
         RU
       </button>
-      <span className="text-gray-300">|</span>
+      <span className="text-brand-border">|</span>
       <button
         onClick={() => switchLocale('kk')}
-        className={locale === 'kk' ? 'font-semibold text-accent' : 'text-gray-600 hover:text-accent'}
+        className={locale === 'kk' ? 'font-semibold text-brand-accent' : 'text-brand-muted hover:text-brand-accent'}
         aria-label="Switch to Kazakh"
       >
         KK

@@ -38,7 +38,7 @@ export function LocationsList({ locations }: LocationsListProps) {
                   {t('address')}: {locale === 'ru' ? location.addressRu : location.addressKk}
                 </p>
               )}
-              <p className="text-lg font-semibold text-accent">
+              <p className="text-lg font-semibold text-brand-accent">
                 {t('fee')}: {formatKZT(location.fee)}
               </p>
             </Card>

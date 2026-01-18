@@ -1,8 +1,6 @@
 /**
- * Pricing Engine Configuration
- * 
- * This file contains all pricing logic and configuration.
- * Edit the values below to adjust pricing.
+ * Legacy Pricing Engine (kept for backward compatibility)
+ * New pricing engine is in pricingConfig.ts
  */
 
 export interface PricingInput {

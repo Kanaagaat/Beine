@@ -1,15 +1,21 @@
 import { formatKZT } from './formatters';
-import { getLocationById, type Location } from '@/data/locations';
-import { type PricingResult } from '@/config/pricing';
 
 export interface InquiryData {
-  students: number;
-  pages: number;
-  locationId: string;
-  total: number;
+  students?: number;
+  studentsTotal?: number;
+  paidCount?: number;
+  freeCopies?: number;
+  pages?: number;
+  locationId?: string;
+  total?: number;
+  totalCost?: number;
+  pricePerStudent?: number;
   desiredDate?: string;
   comment?: string;
   selectedLocations?: string;
+  locations?: string;
+  addons?: string;
+  bonuses?: string;
 }
 
 /**
@@ -19,29 +25,42 @@ export function buildInquiryMessage(
   data: InquiryData,
   locale: 'ru' | 'kk'
 ): string {
-  const location = getLocationById(data.locationId);
-  const locationName = locale === 'ru' ? location?.nameRu || '—' : location?.nameKk || '—';
-  const locationsDisplay = data.selectedLocations || locationName;
-  const totalFormatted = formatKZT(data.total);
-  const dateOrDash = data.desiredDate || '—';
-  const commentOrDash = data.comment || '—';
+  const students = data.studentsTotal || data.students || 0;
+  const paidCount = data.paidCount || 0;
+  const freeCopies = data.freeCopies || 0;
+  const pages = data.pages || 0;
+  const pricePerStudent = data.pricePerStudent || 0;
+  const totalCost = data.totalCost || data.total || 0;
+  const locations = data.locations || data.selectedLocations || '—';
+  const addons = data.addons || '—';
+  const bonuses = data.bonuses || '—';
 
   if (locale === 'ru') {
-    return `Здравствуйте! Хочу заказать виньетки/альбомы в Алматы.
-Ученики: ${data.students}
-Страниц: ${data.pages}
-Локация: ${locationsDisplay}
-Примерная стоимость: ${totalFormatted}
-Желаемая дата: ${dateOrDash}
-Комментарий: ${commentOrDash}`;
+    return `Здравствуйте! Я заинтересован в услугах виньеток и альбомов.
+
+Количество учеников: ${students}${freeCopies > 0 ? ` (${paidCount} платящих, 1 бесплатно)` : ''}
+Страниц: ${pages}
+Локации: ${locations}
+Дополнительные услуги: ${addons}
+Выбранные бонусы: ${bonuses}
+
+Цена за ученика: ${formatKZT(pricePerStudent)}
+Общая стоимость: ${formatKZT(totalCost)}
+
+Могли бы вы отправить дополнительную информацию и подтвердить цену?`;
   } else {
-    return `Сәлеметсіз бе! Алматыда виньетка/альбомға тапсырыс бергім келеді.
-Оқушылар саны: ${data.students}
-Беттер саны: ${data.pages}
-Локация: ${locationsDisplay}
-Шамамен құны: ${totalFormatted}
-Қалаған күн: ${dateOrDash}
-Пікір: ${commentOrDash}`;
+    return `Сәлеметсіз бе! Мен виньетка және альбом қызметтеріне қызығушымын.
+
+Оқушылар саны: ${students}${freeCopies > 0 ? ` (${paidCount} төлеген, 1 тегін)` : ''}
+Беттер саны: ${pages}
+Локациялар: ${locations}
+Қосымша қызметтер: ${addons}
+Таңдалған бонустар: ${bonuses}
+
+Оқушыға баға: ${formatKZT(pricePerStudent)}
+Жалпы құны: ${formatKZT(totalCost)}
+
+Сіз қосымша ақпарат жіберіп, бағаны растай аласыз ба?`;
   }
 }
 
@@ -54,8 +73,13 @@ export function getWhatsAppUrl(message: string): string {
 }
 
 /**
- * Generate Telegram URL
+ * Generate Telegram URL with optional message
  */
-export function getTelegramUrl(): string {
-  return 'https://t.me/Shaaankk';
+export function getTelegramUrl(message?: string): string {
+  const baseUrl = 'https://t.me/Shaaankk';
+  if (message) {
+    const encodedMessage = encodeURIComponent(message);
+    return `${baseUrl}?text=${encodedMessage}`;
+  }
+  return baseUrl;
 }

@@ -23,6 +23,7 @@ export function Navbar() {
     { href: '/gallery', label: tNav('gallery') },
     { href: '/locations', label: tNav('locations') },
     { href: '/pricing', label: tNav('pricing') },
+    { href: '/packages', label: tNav('packages') },
     { href: '/contact', label: tNav('contact') },
   ];
 

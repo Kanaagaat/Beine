@@ -2,7 +2,6 @@
 
 import { useTranslations, useLocale } from 'next-intl';
 import { Card } from '@/components/ui/Card';
-import { formatKZT } from '@/lib/formatters';
 import { type Location } from '@/data/locations';
 
 interface LocationsListProps {
@@ -21,28 +20,42 @@ export function LocationsList({ locations }: LocationsListProps) {
         </h1>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {locations.map((location) => (
-            <Card key={location.id} className="overflow-hidden">
-              {location.imageUrl && (
-                <img
-                  src={location.imageUrl}
-                  alt={locale === 'ru' ? location.nameRu : location.nameKk}
-                  className="w-full h-48 object-cover mb-4"
-                />
-              )}
-              <h3 className="text-xl font-semibold mb-2">
-                {locale === 'ru' ? location.nameRu : location.nameKk}
-              </h3>
-              {location.addressRu && (
-                <p className="text-gray-600 mb-2 text-sm">
-                  {t('address')}: {locale === 'ru' ? location.addressRu : location.addressKk}
-                </p>
-              )}
-              <p className="text-lg font-semibold text-brand-accent">
-                {t('fee')}: {formatKZT(location.fee)}
-              </p>
-            </Card>
-          ))}
+          {locations
+            .filter((l) => l.isActive)
+            .sort((a, b) => a.sortOrder - b.sortOrder)
+            .map((location) => (
+              <Card key={location.id} className="overflow-hidden">
+                {location.imagePath && (
+                  <img
+                    src={location.imagePath}
+                    alt={locale === 'ru' ? location.nameRu : location.nameKk}
+                    className="w-full h-48 object-cover mb-4"
+                    onError={(e) => {
+                      // Fallback for missing images
+                      (e.target as HTMLImageElement).style.display = 'none';
+                    }}
+                  />
+                )}
+                <h3 className="text-xl font-semibold mb-3">
+                  {locale === 'ru' ? location.nameRu : location.nameKk}
+                </h3>
+                <div>
+                  <p className="text-sm font-medium text-brand-muted mb-2">
+                    {t('features')}
+                  </p>
+                  <ul className="text-sm space-y-1">
+                    {(locale === 'ru' ? location.featuresRu : location.featuresKk).map(
+                      (feature, idx) => (
+                        <li key={idx} className="flex items-start gap-2">
+                          <span className="text-brand-accent mt-0.5">•</span>
+                          <span>{feature}</span>
+                        </li>
+                      )
+                    )}
+                  </ul>
+                </div>
+              </Card>
+            ))}
         </div>
       </div>
     </div>

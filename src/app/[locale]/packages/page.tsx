@@ -7,6 +7,7 @@ import { servicePackages } from '@/data/packages';
 import { getWhatsAppUrl, getTelegramUrl } from '@/lib/messaging';
 import { WhatsAppIcon } from '@/components/ui/WhatsAppIcon';
 import { TelegramIcon } from '@/components/ui/TelegramIcon';
+import { formatKZT } from '@/lib/formatters';
 
 export default function PackagesPage() {
   const t = useTranslations('packages');
@@ -39,9 +40,9 @@ export default function PackagesPage() {
               <h2 className="text-2xl font-bold mb-2">{pkg.nameRu}</h2>
               <p className="text-sm text-brand-muted mb-4">{pkg.nameKk}</p>
 
-              {pkg.priceLabelRu && (
-                <p className="text-lg font-semibold text-brand-accent mb-6">{pkg.priceLabelRu}</p>
-              )}
+              <p className="text-lg font-semibold text-brand-accent mb-6">
+                {t('priceLabel')}: {formatKZT(pkg.priceKzt)}
+              </p>
 
               {/* Included items */}
               <div className="flex-1 mb-6">

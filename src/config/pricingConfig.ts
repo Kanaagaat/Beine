@@ -38,9 +38,9 @@ export const ADDONS_PRICES: Record<string, number> = {
 // Use as simple string array for selections
 export const BONUSES: string[] = [
   'Фото будущего',
-  'ЕНТ курс',
-  'Участие в розыгрыше (17 Pro Max)',
-  'Backstage',
+  'Бесплатный ЕНТ курсы',
+  'Участие в розыгрыше (Iphone 17 Pro Max)',
+  'Backstage video',
   'Индивидуальное фото',
   'Электронный формат фото',
 ];

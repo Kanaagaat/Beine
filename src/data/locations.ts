@@ -12,8 +12,8 @@ export interface Location {
 export const locations: Location[] = [
   {
     id: 'park',
-    nameRu: 'Парк',
-    nameKk: 'Парк',
+    nameRu: 'Природа',
+    nameKk: 'Табиғат',
     imagePath: '/locations/10.jpg',
     isActive: true,
     sortOrder: 1,
@@ -34,11 +34,11 @@ export const locations: Location[] = [
     isActive: true,
     sortOrder: 2,
     featuresRu: ['образы', 
-                  'рассвет или заказ',
+                  'рассвет или закат',
                   'можно съемку с лошадью', 
                   'поющие барханы'],
     featuresKk: ['суреттер', 
-                'таң немесе Тапсырыс',
+                'таң немесе күн батуы',
                 'атпен түсіруге болады', 
                 'әнші барханалар'],
   },
@@ -178,7 +178,7 @@ export const locations: Location[] = [
   },
   {
     id: 'checkersOnSaina',
-    nameRu: 'Шашки на Сайн',
+    nameRu: 'Шашки на Саина',
     nameKk: 'Сайында Шашка',
     imagePath: '/locations/3.jpg',
     isActive: true,
@@ -199,7 +199,7 @@ export const locations: Location[] = [
     nameRu: 'Вертолёт',
     nameKk: 'Вертолёт',
     imagePath: '/locations/8.jpg',
-    isActive: false,
+    isActive: true,
     sortOrder: 11,
     featuresRu: [
       'дымовые эффекты ',

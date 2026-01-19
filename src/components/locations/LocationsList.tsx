@@ -29,9 +29,11 @@ export function LocationsList({ locations }: LocationsListProps) {
                   <img
                     src={location.imagePath}
                     alt={locale === 'ru' ? location.nameRu : location.nameKk}
-                    className="w-full h-48 object-cover mb-4"
+                    // CHANGED: 
+                    // 1. object-cover: Fills the whole box (no empty space)
+                    // 2. object-center: Keeps the middle of the image visible
+                    className="w-full aspect-[454/256] object-cover object-center mb-4"
                     onError={(e) => {
-                      // Fallback for missing images
                       (e.target as HTMLImageElement).style.display = 'none';
                     }}
                   />

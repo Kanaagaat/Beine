@@ -7,6 +7,7 @@ export interface ServicePackage {
   id: string;
   nameRu: string;
   nameKk: string;
+  priceKzt: number;
   priceLabelRu?: string;
   priceLabelKk?: string;
   includedRu: string[];
@@ -20,8 +21,7 @@ export const servicePackages: ServicePackage[] = [
     id: 'basic',
     nameRu: 'Базовый пакет',
     nameKk: 'Негіздеме пакеті',
-    priceLabelRu: 'По запросу',
-    priceLabelKk: 'Сауалнама бойынша',
+    priceKzt: 16990,
     includedRu: [
       'Профессиональная фотосъемка (до 2 часов)',
       'Выбор 1 локации',
@@ -45,8 +45,7 @@ export const servicePackages: ServicePackage[] = [
     id: 'premium',
     nameRu: 'Стандарт пакет',
     nameKk: 'Стандарт пакеті',
-    priceLabelRu: 'По запросу',
-    priceLabelKk: 'Сауалнама бойынша',
+    priceKzt: 25990,
     includedRu: [
       'Профессиональная фотосъемка (до 3 часов)',
       'Выбор нескольких локаций',
@@ -71,8 +70,7 @@ export const servicePackages: ServicePackage[] = [
     id: 'luxury',
     nameRu: 'Премиум пакет',
     nameKk: 'Премиум пакеті',
-    priceLabelRu: 'По запросу',
-    priceLabelKk: 'Сауалнама бойынша',
+    priceKzt: 34990,
     includedRu: [
       'Профессиональная фотосъемка (полный день)',
       'Все локации на выбор',

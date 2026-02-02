@@ -9,14 +9,17 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        primary: {
+          DEFAULT: '#5ce1e6',
+        },
         brand: {
           bg: "#FFFFFF",
           surface: "#F8FAFC",
           text: "#111827",
           muted: "#6B7280",
           border: "#E5E7EB",
-          accent: "#EF4444",
-          accentDark: "#BE3144",
+          accent: "#5CE1E6",
+          accentDark: "#49B4B8",
         },
       },
     },

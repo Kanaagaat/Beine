@@ -134,7 +134,6 @@ export function PricingCalculator({ locations }: PricingCalculatorProps) {
               {studentsNumber > 0 && (
                 <p className="mt-2 text-sm text-brand-muted">
                   {t('students.paid')}: {studentsNumber - FREE_COPIES}
-                  {FREE_COPIES > 0 && ` (${t('students.free')}: ${FREE_COPIES})`}
                 </p>
               )}
             </Card>
@@ -266,7 +265,6 @@ export function PricingCalculator({ locations }: PricingCalculatorProps) {
                         {t(`addons.${key}.label`)}
                       </span>
                     </div>
-                    {price > 0 && <span className="text-brand-muted ml-2">{formatKZT(price)}</span>}
                   </label>
                 ))}
               </div>

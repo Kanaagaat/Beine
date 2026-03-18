@@ -16,6 +16,8 @@ export interface InquiryData {
   locations?: string;
   addons?: string;
   bonuses?: string;
+  coverType?: string;
+  coverFinish?: string;
 }
 
 /**
@@ -34,12 +36,16 @@ export function buildInquiryMessage(
   const locations = data.locations || data.selectedLocations || '—';
   const addons = data.addons || '—';
   const bonuses = data.bonuses || '—';
+  const coverType = data.coverType || '—';
+  const coverFinish = data.coverFinish || '—';
 
   if (locale === 'ru') {
     return `Здравствуйте! Я заинтересован в услугах виньеток и альбомов.
 
 Количество учеников: ${students}${freeCopies > 0 ? ` (${paidCount} платящих, 1 бесплатно)` : ''}
 Страниц: ${pages}
+Тип виньетки: ${coverType}
+Вид обложки: ${coverFinish}
 Локации: ${locations}
 Дополнительные услуги: ${addons}
 Выбранные бонусы: ${bonuses}
@@ -53,6 +59,8 @@ export function buildInquiryMessage(
 
 Оқушылар саны: ${students}${freeCopies > 0 ? ` (${paidCount} төлеген, 1 тегін)` : ''}
 Беттер саны: ${pages}
+Виньетка түрі: ${coverType}
+Мұқаба беті: ${coverFinish}
 Локациялар: ${locations}
 Қосымша қызметтер: ${addons}
 Таңдалған бонустар: ${bonuses}
@@ -69,14 +77,14 @@ export function buildInquiryMessage(
  */
 export function getWhatsAppUrl(message: string): string {
   const encodedMessage = encodeURIComponent(message);
-  return `https://wa.me/87004304030?text=${encodedMessage}`;
+  return `https://wa.me/77476070385?text=${encodedMessage}`;
 }
 
 /**
  * Generate Telegram URL with optional message
  */
 export function getTelegramUrl(message?: string): string {
-  const baseUrl = 'https://t.me/Shaaankk';
+  const baseUrl = 'https://t.me/ka1rakni';
   if (message) {
     const encodedMessage = encodeURIComponent(message);
     return `${baseUrl}?text=${encodedMessage}`;

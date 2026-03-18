@@ -43,7 +43,7 @@ export function buildInquiryMessage(
     return `Здравствуйте! Я заинтересован в услугах виньеток и альбомов.
 
 Количество учеников: ${students}${freeCopies > 0 ? ` (${paidCount} платящих, 1 бесплатно)` : ''}
-Страниц: ${pages}
+Разворотов: ${pages}
 Тип виньетки: ${coverType}
 Вид обложки: ${coverFinish}
 Локации: ${locations}
@@ -58,7 +58,7 @@ export function buildInquiryMessage(
     return `Сәлеметсіз бе! Мен виньетка және альбом қызметтеріне қызығушымын.
 
 Оқушылар саны: ${students}${freeCopies > 0 ? ` (${paidCount} төлеген, 1 тегін)` : ''}
-Беттер саны: ${pages}
+Бұрылыстар саны: ${pages}
 Виньетка түрі: ${coverType}
 Мұқаба беті: ${coverFinish}
 Локациялар: ${locations}
@@ -73,7 +73,8 @@ export function buildInquiryMessage(
 }
 
 /**
- * Generate WhatsApp URL with prefilled message
+ * Generate WhatsApp URL for Аружан with prefilled message
+ * (backward compatible name for the original number)
  */
 export function getWhatsAppUrl(message: string): string {
   const encodedMessage = encodeURIComponent(message);
@@ -81,13 +82,17 @@ export function getWhatsAppUrl(message: string): string {
 }
 
 /**
- * Generate Telegram URL with optional message
+ * Generate WhatsApp URL for Аружан with prefilled message
  */
-export function getTelegramUrl(message?: string): string {
-  const baseUrl = 'https://t.me/ka1rakni';
-  if (message) {
-    const encodedMessage = encodeURIComponent(message);
-    return `${baseUrl}?text=${encodedMessage}`;
-  }
-  return baseUrl;
+export function getWhatsAppUrlForAruzhan(message: string): string {
+  const encodedMessage = encodeURIComponent(message);
+  return `https://wa.me/77476070385?text=${encodedMessage}`;
+}
+
+/**
+ * Generate WhatsApp URL for Дина with prefilled message
+ */
+export function getWhatsAppUrlForDina(message: string): string {
+  const encodedMessage = encodeURIComponent(message);
+  return `https://wa.me/77067004201?text=${encodedMessage}`;
 }

@@ -4,9 +4,8 @@ import { useTranslations } from 'next-intl';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { servicePackages } from '@/data/packages';
-import { getWhatsAppUrl, getTelegramUrl } from '@/lib/messaging';
+import { getWhatsAppUrl } from '@/lib/messaging';
 import { WhatsAppIcon } from '@/components/ui/WhatsAppIcon';
-import { TelegramIcon } from '@/components/ui/TelegramIcon';
 import { formatKZT } from '@/lib/formatters';
 
 export default function PackagesPage() {
@@ -143,15 +142,6 @@ export default function PackagesPage() {
             >
               <WhatsAppIcon className="h-5 w-5" />
               {tCommon('whatsapp')}
-            </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              className="flex items-center gap-2"
-              onClick={() => window.open(getTelegramUrl(), '_blank')}
-            >
-              <TelegramIcon className="h-5 w-5" />
-              {tCommon('telegram')}
             </Button>
           </div>
         </div>

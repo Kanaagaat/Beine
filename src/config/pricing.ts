@@ -28,10 +28,10 @@ export interface PricingResult {
 
 // Base price per album based on page count
 const BASE_PRICE_TABLE: Record<number, number> = {
-  4: 1200,   // 3,000 KZT for 4 pages
-  6: 1800,   // 4,000 KZT for 6 pages
-  8: 2400,   // 5,000 KZT for 8 pages
-  10: 3000,  // 6,000 KZT for 10 pages
+  1: 1200,   // 3,000 KZT for 4 pages
+  3: 1800,   // 4,000 KZT for 6 pages
+  4: 2400,   // 5,000 KZT for 8 pages
+  5: 3000,  // 6,000 KZT for 10 pages
 };
 
 // Volume discount tiers (students count -> discount percentage)

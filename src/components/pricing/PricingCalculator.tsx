@@ -6,21 +6,21 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import {
   calculatePricing,
-  PAGES_OPTIONS,
+  SPREADS_OPTIONS,
   ADDONS_PRICES,
   FREE_COPIES,
   COVER_TYPES,
   COVER_FINISHES,
-  type PageCount,
+  getMinSpreadsForLocations,
+  type SpreadCount,
   type PricingResult,
   type CoverTypeId,
   type CoverFinishId,
 } from '@/config/pricingConfig';
 import { formatKZT } from '@/lib/formatters';
 import { type Location } from '@/data/locations';
-import { buildInquiryMessage, getWhatsAppUrl, getTelegramUrl } from '@/lib/messaging';
+import { buildInquiryMessage, getWhatsAppUrlForAruzhan, getWhatsAppUrlForDina } from '@/lib/messaging';
 import { WhatsAppIcon } from '@/components/ui/WhatsAppIcon';
-import { TelegramIcon } from '@/components/ui/TelegramIcon';
 import { BonusesSelector } from './BonusesSelector';
 
 interface PricingCalculatorProps {
@@ -33,8 +33,8 @@ export function PricingCalculator({ locations }: PricingCalculatorProps) {
   const locale = useLocale() as 'ru' | 'kk';
 
   // Form state
-  const [students, setStudents] = useState<number | ''>(25);
-  const [pages, setPages] = useState<PageCount>(4);
+  const [students, setStudents] = useState<number | ''>('');
+  const [spreads, setSpreads] = useState<SpreadCount>(1);
   const [selectedLocationIds, setSelectedLocationIds] = useState<string[]>([]);
   const [coverTypeId, setCoverTypeId] = useState<CoverTypeId>('hard_classic');
   const [coverFinishId, setCoverFinishId] = useState<CoverFinishId>('matte');
@@ -56,7 +56,7 @@ export function PricingCalculator({ locations }: PricingCalculatorProps) {
     if (selectedLocationIds.length > 0 && studentsNumber > 0) {
       const result = calculatePricing({
         studentsTotal: studentsNumber,
-        pages,
+        spreads,
         locationIds: selectedLocationIds,
         addons: selectedAddons,
         coverTypeId,
@@ -67,9 +67,9 @@ export function PricingCalculator({ locations }: PricingCalculatorProps) {
     } else {
       setPricing(null);
     }
-  }, [studentsNumber, pages, selectedLocationIds, selectedAddons, coverTypeId, coverFinishId]);
+  }, [studentsNumber, spreads, selectedLocationIds, selectedAddons, coverTypeId, coverFinishId]);
 
-  const handleContact = (method: 'whatsapp' | 'telegram') => {
+  const handleContact = (manager: 'aruzhan' | 'dina') => {
     if (!pricing || !pricing.isValid || selectedLocationIds.length === 0 || studentsNumber <= 0) {
       return;
     }
@@ -111,7 +111,7 @@ export function PricingCalculator({ locations }: PricingCalculatorProps) {
       {
         students: studentsNumber,
         paidCount: pricing.paidCount,
-        pages,
+        pages: spreads,
         locations: selectedLocationsNames,
         addons: selectedAddonsNames,
         bonuses: selectedBonuses.join(', '),
@@ -123,10 +123,10 @@ export function PricingCalculator({ locations }: PricingCalculatorProps) {
       locale
     );
 
-    if (method === 'whatsapp') {
-      window.open(getWhatsAppUrl(message), '_blank');
+    if (manager === 'aruzhan') {
+      window.open(getWhatsAppUrlForAruzhan(message), '_blank');
     } else {
-      window.open(getTelegramUrl(message), '_blank');
+      window.open(getWhatsAppUrlForDina(message), '_blank');
     }
   };
 
@@ -157,27 +157,42 @@ export function PricingCalculator({ locations }: PricingCalculatorProps) {
               {studentsNumber > 0}
             </Card>
 
-            {/* Pages Selection */}
+            {/* Spreads Selection */}
             <Card>
               <label className="label">
                 {t('pages.label')}
                 <span className="ml-1 text-gray-400 opacity-60">{t('pages.hint')}</span>
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                {PAGES_OPTIONS.map((pageCount) => (
-                  <button
-                    key={pageCount}
-                    onClick={() => setPages(pageCount as PageCount)}
-                    className={`px-4 py-2 rounded-lg border-2 transition-colors ${
-                      pages === pageCount
-                        ? 'border-brand-accent bg-brand-accent text-white'
-                        : 'border-brand-border hover:border-brand-accent'
-                    }`}
-                  >
-                    {pageCount}
-                  </button>
-                ))}
+                {SPREADS_OPTIONS.map((spreadCount) => {
+                  const minSpreads = getMinSpreadsForLocations(selectedLocationIds.length);
+                  const isDisabled = spreadCount < minSpreads;
+                  
+                  return (
+                    <button
+                      key={spreadCount}
+                      onClick={() => setSpreads(spreadCount as SpreadCount)}
+                      disabled={isDisabled}
+                      className={`px-4 py-2 rounded-lg border-2 transition-colors ${
+                        isDisabled
+                          ? 'border-brand-border opacity-50 cursor-not-allowed'
+                          : spreads === spreadCount
+                            ? 'border-brand-accent bg-brand-accent text-white'
+                            : 'border-brand-border hover:border-brand-accent'
+                      }`}
+                      // title={isDisabled ? `Минимум ${minSpreads} разворотов для ${selectedLocationIds.length} локаций` : ''}
+                    >
+                      {spreadCount}
+                    </button>
+                  );
+                })}
               </div>
+              <p className="mt-3 text-sm text-slate-500 whitespace-pre-wrap">
+                {t('spreadsHint', {
+                  locationCount: selectedLocationIds.length,
+                  spreads: spreads,
+                })}
+              </p>
             </Card>
 
             {/* Cover Type Selection */}
@@ -265,11 +280,17 @@ export function PricingCalculator({ locations }: PricingCalculatorProps) {
                             key={location.id}
                             type="button"
                             onClick={() => {
-                              setSelectedLocationIds(
-                                isSelected
-                                  ? selectedLocationIds.filter((id) => id !== location.id)
-                                  : [...selectedLocationIds, location.id]
-                              );
+                              const nextLocationIds = isSelected
+                                ? selectedLocationIds.filter((id) => id !== location.id)
+                                : [...selectedLocationIds, location.id];
+                              
+                              setSelectedLocationIds(nextLocationIds);
+                              
+                              // Enforce spreads constraint: each location needs at least 1 spread
+                              const minSpreads = getMinSpreadsForLocations(nextLocationIds.length);
+                              if (spreads < minSpreads) {
+                                setSpreads(minSpreads as SpreadCount);
+                              }
                             }}
                             className={`flex w-full items-center gap-3 rounded-lg border px-4 py-3 text-left transition-colors ${
                               isSelected
@@ -308,9 +329,16 @@ export function PricingCalculator({ locations }: PricingCalculatorProps) {
                         <span>{locale === 'ru' ? loc?.nameRu : loc?.nameKk}</span>
                         <button
                           type="button"
-                          onClick={() =>
-                            setSelectedLocationIds(selectedLocationIds.filter((locId) => locId !== id))
-                          }
+                          onClick={() => {
+                            const nextLocationIds = selectedLocationIds.filter((locId) => locId !== id);
+                            setSelectedLocationIds(nextLocationIds);
+                            
+                            // Enforce spreads constraint after removing location
+                            const minSpreads = getMinSpreadsForLocations(nextLocationIds.length);
+                            if (spreads < minSpreads) {
+                              setSpreads(minSpreads as SpreadCount);
+                            }
+                          }}
                           className="text-brand-muted hover:text-brand-accent"
                         >
                           ✕
@@ -392,22 +420,22 @@ export function PricingCalculator({ locations }: PricingCalculatorProps) {
                       variant="primary"
                       size="lg"
                       className="w-full flex items-center justify-center gap-2"
-                      onClick={() => handleContact('whatsapp')}
+                      onClick={() => handleContact('aruzhan')}
                       disabled={!pricing.isValid}
                     >
                       <WhatsAppIcon className="h-5 w-5" />
-                      {tCommon('whatsapp')}
+                      {t('contact.managerAruzhan')}
                     </Button>
 
                     <Button
                       variant="outline"
                       size="lg"
                       className="w-full flex items-center justify-center gap-2"
-                      onClick={() => handleContact('telegram')}
+                      onClick={() => handleContact('dina')}
                       disabled={!pricing.isValid}
                     >
-                      <TelegramIcon className="h-5 w-5" />
-                      {tCommon('telegram')}
+                      <WhatsAppIcon className="h-5 w-5" />
+                      {t('contact.managerDina')}
                     </Button>
                   </div>
                 </>

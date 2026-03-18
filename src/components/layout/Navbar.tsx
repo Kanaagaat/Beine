@@ -6,9 +6,8 @@ import { LanguageSwitcher } from './LanguageSwitcher';
 import { Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { getWhatsAppUrl, getTelegramUrl } from '@/lib/messaging';
+import { getWhatsAppUrl } from '@/lib/messaging';
 import { WhatsAppIcon } from '@/components/ui/WhatsAppIcon';
-import { TelegramIcon } from '@/components/ui/TelegramIcon';
 
 const { Link, usePathname } = routing;
 
@@ -66,16 +65,6 @@ export function Navbar() {
               >
                 <WhatsAppIcon className="h-5 w-5" />
               </a>
-
-              <a
-                href={getTelegramUrl()}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                aria-label="Telegram"
-              >
-                <TelegramIcon className="h-5 w-5" />
-              </a>
             </div>
 
             <LanguageSwitcher />
@@ -92,16 +81,6 @@ export function Navbar() {
                 aria-label="WhatsApp"
               >
                 <WhatsAppIcon className="h-5 w-5" />
-              </a>
-
-              <a
-                href={getTelegramUrl()}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 text-blue-600"
-                aria-label="Telegram"
-              >
-                <TelegramIcon className="h-5 w-5" />
               </a>
             </div>
 

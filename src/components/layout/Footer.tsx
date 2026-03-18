@@ -2,9 +2,8 @@
 
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
-import { getWhatsAppUrl, getTelegramUrl } from '@/lib/messaging';
+import { getWhatsAppUrl } from '@/lib/messaging';
 import { WhatsAppIcon } from '@/components/ui/WhatsAppIcon';
-import { TelegramIcon } from '@/components/ui/TelegramIcon';
 
 export function Footer() {
   const t = useTranslations('common');
@@ -60,15 +59,6 @@ export function Footer() {
               >
                 <WhatsAppIcon className="h-5 w-5" />
                 <span>{t('whatsapp')}</span>
-              </a>
-              <a
-                href={getTelegramUrl()}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors"
-              >
-                <TelegramIcon className="h-5 w-5" />
-                <span>{t('telegram')}</span>
               </a>
             </div>
           </div>

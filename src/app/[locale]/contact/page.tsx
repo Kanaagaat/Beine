@@ -3,9 +3,8 @@
 import { useTranslations, useLocale } from 'next-intl';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { getWhatsAppUrl, getTelegramUrl } from '@/lib/messaging';
+import { getWhatsAppUrl } from '@/lib/messaging';
 import { WhatsAppIcon } from '@/components/ui/WhatsAppIcon';
-import { TelegramIcon } from '@/components/ui/TelegramIcon';
 
 export default function ContactPage() {
   const t = useTranslations('contact');
@@ -48,21 +47,6 @@ export default function ContactPage() {
                 >
                   <WhatsAppIcon className="h-5 w-5" />
                   {tCommon('whatsapp')}
-                </Button>
-              </a>
-              <a
-                href={getTelegramUrl()}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1"
-              >
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="w-full flex items-center justify-center gap-2"
-                >
-                  <TelegramIcon className="h-5 w-5" />
-                  {tCommon('telegram')}
                 </Button>
               </a>
             </div>

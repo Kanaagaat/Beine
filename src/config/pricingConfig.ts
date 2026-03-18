@@ -41,7 +41,7 @@ export const COVER_FINISHES: CoverFinish[] = [
 export const PHOTOGRAPHER_PRICE = 30000;
 export const HARD_COVER_COST = 1800;
 export const PAGE_PRICE = 600; // per page (min 2 irrelevant: pages are 4/6/8/10)
-export const FREE_COPIES = 1; // free album for class leader (староста)
+export const FREE_COPIES = 0; // free album for class leader (староста)
 export const MARGIN_PER_PAID_ALBUM = 15000;
 
 // Location prices: 1-hour / 2-hour rates (KZT)
@@ -77,9 +77,17 @@ export const BONUSES: string[] = [
   'Электронный формат фото',
 ];
 
-// Page count options available
-export const PAGES_OPTIONS = [2, 3, 4, 5] as const;
-export type PageCount = typeof PAGES_OPTIONS[number];
+// Spread count options available (1 spread = 2 pages)
+export const SPREADS_OPTIONS = [1, 3, 4, 5] as const;
+export type SpreadCount = typeof SPREADS_OPTIONS[number];
+
+/**
+ * Get minimum spreads required based on location count
+ * Rule: each location needs at least 1 spread
+ */
+export function getMinSpreadsForLocations(locationCount: number): number {
+  return Math.max(1, locationCount);
+}
 
 /**
  * Calculate location cost based on selected locations and student count
@@ -116,7 +124,7 @@ export function roundTo10(value: number): number {
  */
 export interface PricingInput {
   studentsTotal: number;
-  pages: PageCount;
+  spreads: SpreadCount;
   locationIds: string[];
   addons: Record<string, boolean>; // delivery, limousine, ribbon
   coverTypeId: CoverTypeId;
@@ -134,7 +142,7 @@ export interface PricingResult {
 }
 
 export function calculatePricing(input: PricingInput): PricingResult {
-  const { studentsTotal, pages, locationIds, addons, coverTypeId, coverFinishId } = input;
+  const { studentsTotal, spreads, locationIds, addons, coverTypeId, coverFinishId } = input;
 
   // Validate
   const paidCount = studentsTotal;
@@ -168,11 +176,11 @@ export function calculatePricing(input: PricingInput): PricingResult {
   // Algorithm
   // X = locationsCostTotal + photographer + addonsCost
   // Z = X / paidCount
-  // pricePerStudent = roundTo10(Z + coverCost + finishCost + pagesCost + marginPerPaidAlbum)
+  // pricePerStudent = roundTo10(Z + coverCost + finishCost + spreadsCost + marginPerPaidAlbum)
   const X = locationsCostTotal + PHOTOGRAPHER_PRICE + addonsCost;
   const Z = X / paidCount;
-  const pagesCost = pages * PAGE_PRICE;
-  const pricePerStudent = roundTo10(Z + coverCost + finishCost + pagesCost + MARGIN_PER_PAID_ALBUM);
+  const spreadsCost = spreads * PAGE_PRICE;
+  const pricePerStudent = roundTo10(Z + coverCost + finishCost + spreadsCost + MARGIN_PER_PAID_ALBUM);
   const totalCost = pricePerStudent * paidCount;
 
   return {

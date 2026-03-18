@@ -9,8 +9,12 @@ import {
   PAGES_OPTIONS,
   ADDONS_PRICES,
   FREE_COPIES,
+  COVER_TYPES,
+  COVER_FINISHES,
   type PageCount,
   type PricingResult,
+  type CoverTypeId,
+  type CoverFinishId,
 } from '@/config/pricingConfig';
 import { formatKZT } from '@/lib/formatters';
 import { type Location } from '@/data/locations';
@@ -32,9 +36,10 @@ export function PricingCalculator({ locations }: PricingCalculatorProps) {
   const [students, setStudents] = useState<number | ''>(25);
   const [pages, setPages] = useState<PageCount>(4);
   const [selectedLocationIds, setSelectedLocationIds] = useState<string[]>([]);
+  const [coverTypeId, setCoverTypeId] = useState<CoverTypeId>('hard_classic');
+  const [coverFinishId, setCoverFinishId] = useState<CoverFinishId>('matte');
   const [selectedAddons, setSelectedAddons] = useState<Record<string, boolean>>({
     delivery: false,
-    urgent: false,
     limousine: false,
     ribbon: false,
   });
@@ -54,13 +59,15 @@ export function PricingCalculator({ locations }: PricingCalculatorProps) {
         pages,
         locationIds: selectedLocationIds,
         addons: selectedAddons,
+        coverTypeId,
+        coverFinishId,
       });
 
       setPricing(result);
     } else {
       setPricing(null);
     }
-  }, [studentsNumber, pages, selectedLocationIds, selectedAddons]);
+  }, [studentsNumber, pages, selectedLocationIds, selectedAddons, coverTypeId, coverFinishId]);
 
   const handleContact = (method: 'whatsapp' | 'telegram') => {
     if (!pricing || !pricing.isValid || selectedLocationIds.length === 0 || studentsNumber <= 0) {
@@ -86,6 +93,20 @@ export function PricingCalculator({ locations }: PricingCalculatorProps) {
       .filter(Boolean)
       .join(', ');
 
+    // Get cover type label
+    const coverTypeKey = coverTypeId === 'hard_classic' ? 'hardClassic' : 'comboCover';
+    const coverTypeLabel = t(`cover.${coverTypeKey}`);
+
+    // Get cover finish label
+    const finishKeyMap: Record<string, string> = {
+      matte: 'matte',
+      glossy: 'glossy',
+      eco_leather: 'ecoLeather',
+      diamond: 'diamond',
+    };
+    const finishKey = finishKeyMap[coverFinishId] || 'matte';
+    const coverFinishLabel = t(`coverFinish.${finishKey}`);
+
     const message = buildInquiryMessage(
       {
         students: studentsNumber,
@@ -96,6 +117,8 @@ export function PricingCalculator({ locations }: PricingCalculatorProps) {
         bonuses: selectedBonuses.join(', '),
         pricePerStudent: pricing.pricePerStudent,
         totalCost: pricing.totalCost,
+        coverType: coverTypeLabel,
+        coverFinish: coverFinishLabel,
       },
       locale
     );
@@ -131,16 +154,15 @@ export function PricingCalculator({ locations }: PricingCalculatorProps) {
                 className="input"
                 placeholder={t('students.placeholder')}
               />
-              {studentsNumber > 0 && (
-                <p className="mt-2 text-sm text-brand-muted">
-                  {t('students.paid')}: {studentsNumber - FREE_COPIES}
-                </p>
-              )}
+              {studentsNumber > 0}
             </Card>
 
             {/* Pages Selection */}
             <Card>
-              <label className="label">{t('pages.label')}</label>
+              <label className="label">
+                {t('pages.label')}
+                <span className="ml-1 text-gray-400 opacity-60">{t('pages.hint')}</span>
+              </label>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {PAGES_OPTIONS.map((pageCount) => (
                   <button
@@ -156,6 +178,56 @@ export function PricingCalculator({ locations }: PricingCalculatorProps) {
                   </button>
                 ))}
               </div>
+            </Card>
+
+            {/* Cover Type Selection */}
+            <Card>
+              <h3 className="label mb-3">{t('cover.label')}</h3>
+              <div className="space-y-2">
+                {COVER_TYPES.map((cover) => (
+                  <label
+                    key={cover.id}
+                    className="flex items-center gap-3 cursor-pointer p-3 border border-brand-border rounded-lg hover:bg-brand-surface transition-colors"
+                  >
+                    <input
+                      type="radio"
+                      name="coverType"
+                      value={cover.id}
+                      checked={coverTypeId === cover.id}
+                      onChange={() => setCoverTypeId(cover.id)}
+                      className="w-4 h-4 accent-brand-accent"
+                    />
+                    <span className="font-medium">
+                      {t(`cover.${cover.id === 'hard_classic' ? 'hardClassic' : 'comboCover'}`)}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </Card>
+
+            {/* Cover Finish Selection */}
+            <Card>
+              <label className="label">{t('coverFinish.label')}</label>
+              <select
+                value={coverFinishId}
+                onChange={(e) => setCoverFinishId(e.target.value as CoverFinishId)}
+                className="input w-full"
+              >
+                {COVER_FINISHES.map((finish) => {
+                  const finishKeyMap: Record<string, string> = {
+                    matte: 'matte',
+                    glossy: 'glossy',
+                    eco_leather: 'ecoLeather',
+                    diamond: 'diamond',
+                  };
+                  const key = finishKeyMap[finish.id];
+                  return (
+                    <option key={finish.id} value={finish.id}>
+                      {t(`coverFinish.${key}`)}
+                    </option>
+                  );
+                })}
+              </select>
             </Card>
 
             {/* Location Selection */}
@@ -183,33 +255,43 @@ export function PricingCalculator({ locations }: PricingCalculatorProps) {
                 </button>
 
                 {showLocationDropdown && (
-                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-brand-border rounded-lg shadow-lg z-10 max-h-64 overflow-y-auto">
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-brand-border rounded-lg shadow-lg z-10 max-h-64 overflow-y-auto p-2 space-y-2">
                     {locations
                       .filter((l) => l.isActive)
-                      .map((location) => (
-                        <label
-                          key={location.id}
-                          className="flex items-center px-4 py-3 hover:bg-brand-surface cursor-pointer border-b border-brand-border last:border-b-0"
-                        >
-                          <input
-                            type="checkbox"
-                            checked={selectedLocationIds.includes(location.id)}
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                setSelectedLocationIds([...selectedLocationIds, location.id]);
-                              } else {
-                                setSelectedLocationIds(
-                                  selectedLocationIds.filter((id) => id !== location.id)
-                                );
-                              }
+                      .map((location) => {
+                        const isSelected = selectedLocationIds.includes(location.id);
+                        return (
+                          <button
+                            key={location.id}
+                            type="button"
+                            onClick={() => {
+                              setSelectedLocationIds(
+                                isSelected
+                                  ? selectedLocationIds.filter((id) => id !== location.id)
+                                  : [...selectedLocationIds, location.id]
+                              );
                             }}
-                            className="w-4 h-4 rounded text-brand-accent"
-                          />
-                          <span className="ml-3 flex-1 font-medium">
-                            {locale === 'ru' ? location.nameRu : location.nameKk}
-                          </span>
-                        </label>
-                      ))}
+                            className={`flex w-full items-center gap-3 rounded-lg border px-4 py-3 text-left transition-colors ${
+                              isSelected
+                                ? 'border-brand-accent bg-brand-accent/10'
+                                : 'border-brand-border hover:border-brand-accent/60'
+                            }`}
+                          >
+                            <span
+                              className={`inline-flex h-4 w-4 items-center justify-center rounded-full border flex-shrink-0 ${
+                                isSelected
+                                  ? 'border-brand-accent bg-brand-accent'
+                                  : 'border-brand-border bg-white'
+                              }`}
+                            >
+                              {isSelected && <span className="h-2 w-2 rounded-full bg-white" />}
+                            </span>
+                            <span className="flex-1 font-medium">
+                              {locale === 'ru' ? location.nameRu : location.nameKk}
+                            </span>
+                          </button>
+                        );
+                      })}
                   </div>
                 )}
               </div>
@@ -243,30 +325,40 @@ export function PricingCalculator({ locations }: PricingCalculatorProps) {
             {/* Add-ons Selection */}
             <Card>
               <label className="label">{t('addons.title')}</label>
-              <div className="space-y-3">
-                {Object.entries(ADDONS_PRICES).map(([key, price]) => (
-                  <label
-                    key={key}
-                    className="flex items-center justify-between cursor-pointer p-3 border border-brand-border rounded-lg hover:bg-brand-surface transition-colors"
-                  >
-                    <div className="flex items-center flex-1">
-                      <input
-                        type="checkbox"
-                        checked={selectedAddons[key] || false}
-                        onChange={(e) => {
-                          setSelectedAddons({
-                            ...selectedAddons,
-                            [key]: e.target.checked,
-                          });
-                        }}
-                        className="w-5 h-5 text-brand-accent rounded focus:ring-brand-accent"
-                      />
-                      <span className="ml-3 font-medium">
+              <div className="space-y-2">
+                {Object.entries(ADDONS_PRICES).map(([key, price]) => {
+                  const isSelected = selectedAddons[key] || false;
+                  return (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => {
+                        setSelectedAddons({
+                          ...selectedAddons,
+                          [key]: !isSelected,
+                        });
+                      }}
+                      className={`flex w-full items-center gap-3 rounded-lg border px-4 py-3 text-left transition-colors ${
+                        isSelected
+                          ? 'border-brand-accent bg-brand-accent/10'
+                          : 'border-brand-border hover:border-brand-accent/60'
+                      }`}
+                    >
+                      <span
+                        className={`inline-flex h-4 w-4 items-center justify-center rounded-full border flex-shrink-0 ${
+                          isSelected
+                            ? 'border-brand-accent bg-brand-accent'
+                            : 'border-brand-border bg-white'
+                        }`}
+                      >
+                        {isSelected && <span className="h-2 w-2 rounded-full bg-white" />}
+                      </span>
+                      <span className="flex-1 font-medium">
                         {t(`addons.${key}.label`)}
                       </span>
-                    </div>
-                  </label>
-                ))}
+                    </button>
+                  );
+                })}
               </div>
             </Card>
 

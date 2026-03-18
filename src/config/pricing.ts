@@ -11,7 +11,7 @@ export interface PricingInput {
 }
 
 export interface Addon {
-  type: 'premiumCover' | 'urgent' | 'delivery';
+  type: 'premiumCover' | 'delivery';
   price: number;
 }
 
@@ -36,15 +36,14 @@ const BASE_PRICE_TABLE: Record<number, number> = {
 
 // Volume discount tiers (students count -> discount percentage)
 const VOLUME_DISCOUNT_TIERS: Array<{ minStudents: number; discountPercent: number }> = [
-  { minStudents: 30, discountPercent: 5 },   // 5% discount for 30+ students
-  { minStudents: 50, discountPercent: 10 },  // 10% discount for 50+ students
-  { minStudents: 100, discountPercent: 15 }, // 15% discount for 100+ students
+  { minStudents: 30, discountPercent: 0 },   // 5% discount for 30+ students
+  { minStudents: 50, discountPercent: 0 },  // 10% discount for 50+ students
+  { minStudents: 100, discountPercent: 0 }, // 15% discount for 100+ students
 ];
 
 // Addon prices (can be set to 0 if pricing is "request quote")
 export const ADDON_PRICES: Record<string, number> = {
   premiumCover: 2000,  // 2,000 KZT
-  urgent: 5000,         // 5,000 KZT
   delivery: 3000,       // 3,000 KZT
 };
 

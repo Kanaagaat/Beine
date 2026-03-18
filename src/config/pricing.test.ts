@@ -81,15 +81,14 @@ describe('Pricing Engine', () => {
         locationFee: 5000,
         addons: [
           { type: 'premiumCover', price: 2000 },
-          { type: 'urgent', price: 5000 },
         ],
       };
 
       const result = calculatePrice(input);
 
-      expect(result.addonsCost).toBe(7000);
+      expect(result.addonsCost).toBe(2000);
       expect(result.totalBasePrice).toBe(110000); // 5500 * 20
-      expect(result.total).toBe(122000); // 110000 + 5000 + 7000
+      expect(result.total).toBe(117000); // 110000 + 5000 + 2000
     });
 
     it('should calculate price per student correctly', () => {
@@ -117,7 +116,6 @@ describe('Pricing Engine', () => {
   describe('getAddonPrice', () => {
     it('should return correct price for known addons', () => {
       expect(getAddonPrice('premiumCover')).toBe(2000);
-      expect(getAddonPrice('urgent')).toBe(5000);
       expect(getAddonPrice('delivery')).toBe(3000);
     });
 

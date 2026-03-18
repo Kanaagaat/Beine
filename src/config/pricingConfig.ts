@@ -3,10 +3,44 @@
  * Single source of truth for all pricing
  */
 
+// Cover types configuration
+export type CoverTypeId = 'hard_classic' | 'combo_cover';
+
+export interface CoverType {
+  id: CoverTypeId;
+  price: number; // KZT, I will set values later
+}
+
+export const COVER_TYPES: CoverType[] = [
+  {
+    id: 'hard_classic',
+    price: 0, // TODO: set real price
+  },
+  {
+    id: 'combo_cover',
+    price: 0, // TODO: set real price
+  },
+];
+
+// Cover finish configuration
+export type CoverFinishId = 'matte' | 'glossy' | 'eco_leather' | 'diamond';
+
+export interface CoverFinish {
+  id: CoverFinishId;
+  price: number; // All are free now, but keep for future use
+}
+
+export const COVER_FINISHES: CoverFinish[] = [
+  { id: 'matte', price: 0 },
+  { id: 'glossy', price: 0 },
+  { id: 'eco_leather', price: 0 },
+  { id: 'diamond', price: 0 },
+];
+
 // Fixed costs (KZT)
 export const PHOTOGRAPHER_PRICE = 30000;
 export const HARD_COVER_COST = 1800;
-export const PAGE_PRICE = 300; // per page (min 2 irrelevant: pages are 4/6/8/10)
+export const PAGE_PRICE = 600; // per page (min 2 irrelevant: pages are 4/6/8/10)
 export const FREE_COPIES = 1; // free album for class leader (староста)
 export const MARGIN_PER_PAID_ALBUM = 15000;
 
@@ -29,7 +63,6 @@ export const LOCATIONS_PRICES: Record<string, { oneHour: number; twoHours: numbe
 // Add-on prices (KZT)
 export const ADDONS_PRICES: Record<string, number> = {
   delivery: 50000, // Развозка
-  urgent: 5000, // Срочный заказ
   limousine: 40000, // Лимузин
   ribbon: 1000, // Лента
 };
@@ -39,14 +72,13 @@ export const ADDONS_PRICES: Record<string, number> = {
 export const BONUSES: string[] = [
   'Фото будущего',
   'Бесплатный ЕНТ курсы',
-  'Участие в розыгрыше (Iphone 17 Pro Max)',
   'Backstage video',
   'Индивидуальное фото',
   'Электронный формат фото',
 ];
 
 // Page count options available
-export const PAGES_OPTIONS = [4, 6, 8, 10] as const;
+export const PAGES_OPTIONS = [2, 3, 4, 5] as const;
 export type PageCount = typeof PAGES_OPTIONS[number];
 
 /**
@@ -79,14 +111,16 @@ export function roundTo10(value: number): number {
 
 /**
  * Pricing engine: main calculation
- * Inputs: studentsTotal, pages, locationIds, addons
+ * Inputs: studentsTotal, pages, locationIds, addons, coverTypeId, coverFinishId
  * Returns: paidCount, freeCopies, pricePerStudent, totalCost
  */
 export interface PricingInput {
   studentsTotal: number;
   pages: PageCount;
   locationIds: string[];
-  addons: Record<string, boolean>; // delivery, urgent, limousine, ribbon
+  addons: Record<string, boolean>; // delivery, limousine, ribbon
+  coverTypeId: CoverTypeId;
+  coverFinishId: CoverFinishId;
 }
 
 export interface PricingResult {
@@ -100,16 +134,16 @@ export interface PricingResult {
 }
 
 export function calculatePricing(input: PricingInput): PricingResult {
-  const { studentsTotal, pages, locationIds, addons } = input;
+  const { studentsTotal, pages, locationIds, addons, coverTypeId, coverFinishId } = input;
 
   // Validate
-  const paidCount = studentsTotal - FREE_COPIES;
+  const paidCount = studentsTotal;
   if (paidCount <= 0) {
     return {
       isValid: false,
       error: 'Must have at least 1 paying student',
       paidCount: 0,
-      freeCopies: FREE_COPIES,
+      freeCopies: 0,
       pricePerStudent: 0,
       totalCost: 0,
       locationsCostTotal: 0,
@@ -123,14 +157,22 @@ export function calculatePricing(input: PricingInput): PricingResult {
     return sum + (ADDONS_PRICES[key] || 0);
   }, 0);
 
+  // Get cover cost from selected cover type
+  const selectedCover = COVER_TYPES.find((c) => c.id === coverTypeId);
+  const coverCost = selectedCover?.price ?? 0;
+
+  // Cover finish cost (all are free for now)
+  const selectedFinish = COVER_FINISHES.find((f) => f.id === coverFinishId);
+  const finishCost = selectedFinish?.price ?? 0;
+
   // Algorithm
   // X = locationsCostTotal + photographer + addonsCost
   // Z = X / paidCount
-  // pricePerStudent = roundTo10(Z + hardCoverCost + pagesCost + marginPerPaidAlbum)
+  // pricePerStudent = roundTo10(Z + coverCost + finishCost + pagesCost + marginPerPaidAlbum)
   const X = locationsCostTotal + PHOTOGRAPHER_PRICE + addonsCost;
   const Z = X / paidCount;
   const pagesCost = pages * PAGE_PRICE;
-  const pricePerStudent = roundTo10(Z + HARD_COVER_COST + pagesCost + MARGIN_PER_PAID_ALBUM);
+  const pricePerStudent = roundTo10(Z + coverCost + finishCost + pagesCost + MARGIN_PER_PAID_ALBUM);
   const totalCost = pricePerStudent * paidCount;
 
   return {

@@ -33,33 +33,38 @@ export function BonusesSelector({ selectedBonuses, onSelectionChange }: BonusesS
       <label className="label">{t('bonuses.label')}</label>
       <p className="text-sm text-brand-muted mb-4">{t('bonuses.maxSelection')}</p>
 
-      <div className="space-y-3">
+      <div className="space-y-2">
         {BONUSES.map((bonus) => {
           const isSelected = selectedBonuses.includes(bonus);
           const isDisabled = isMaxSelected && !isSelected;
 
           return (
-            <label
+            <button
               key={bonus}
-              className={`flex items-center p-3 border border-brand-border rounded-lg cursor-pointer transition-colors ${
+              type="button"
+              onClick={() => handleToggle(bonus)}
+              disabled={isDisabled}
+              className={`flex w-full items-center gap-3 rounded-lg border px-4 py-3 text-left transition-colors ${
                 isDisabled
-                  ? 'opacity-50 cursor-not-allowed bg-gray-50'
+                  ? 'opacity-50 cursor-not-allowed border-brand-border bg-gray-50'
                   : isSelected
-                    ? 'bg-brand-surface border-brand-accent'
-                    : 'hover:bg-brand-surface'
+                    ? 'border-brand-accent bg-brand-accent/10'
+                    : 'border-brand-border hover:border-brand-accent/60'
               }`}
             >
-              <input
-                type="checkbox"
-                checked={isSelected}
-                onChange={() => handleToggle(bonus)}
-                disabled={isDisabled}
-                className="w-5 h-5 text-brand-accent rounded focus:ring-brand-accent disabled:opacity-50"
-              />
-              <span className={`ml-3 font-medium ${isDisabled ? 'text-gray-500' : ''}`}>
+              <span
+                className={`inline-flex h-4 w-4 items-center justify-center rounded-full border flex-shrink-0 ${
+                  isSelected
+                    ? 'border-brand-accent bg-brand-accent'
+                    : 'border-brand-border bg-white'
+                }`}
+              >
+                {isSelected && <span className="h-2 w-2 rounded-full bg-white" />}
+              </span>
+              <span className={`flex-1 font-medium ${isDisabled ? 'text-gray-500' : ''}`}>
                 {bonus}
               </span>
-            </label>
+            </button>
           );
         })}
       </div>

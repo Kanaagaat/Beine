@@ -90,6 +90,15 @@ export function getMinSpreadsForLocations(locationCount: number): number {
 }
 
 /**
+ * Get recommended spreads for many locations (> 5)
+ * When locations > 5, suggest slightly more spreads than locations for better coverage
+ */
+export function getRecommendedSpreadsForLocations(locationCount: number): number {
+  if (locationCount <= 5) return locationCount;
+  return locationCount + 1; // slightly more than locations for many location scenarios
+}
+
+/**
  * Calculate location cost based on selected locations and student count
  * Rule: if studentsTotal > 15 use 2-hour price, else 1-hour price
  */

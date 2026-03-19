@@ -12,6 +12,7 @@ import {
   COVER_TYPES,
   COVER_FINISHES,
   getMinSpreadsForLocations,
+  getRecommendedSpreadsForLocations,
   type SpreadCount,
   type PricingResult,
   type CoverTypeId,
@@ -27,6 +28,8 @@ interface PricingCalculatorProps {
   locations: Location[];
 }
 
+type SpreadMode = 'manual' | 'auto';
+
 export function PricingCalculator({ locations }: PricingCalculatorProps) {
   const t = useTranslations('pricing');
   const tCommon = useTranslations('common');
@@ -35,6 +38,7 @@ export function PricingCalculator({ locations }: PricingCalculatorProps) {
   // Form state
   const [students, setStudents] = useState<number | ''>('');
   const [spreads, setSpreads] = useState<SpreadCount>(1);
+  const [spreadMode, setSpreadMode] = useState<SpreadMode>('manual');
   const [selectedLocationIds, setSelectedLocationIds] = useState<string[]>([]);
   const [coverTypeId, setCoverTypeId] = useState<CoverTypeId>('hard_classic');
   const [coverFinishId, setCoverFinishId] = useState<CoverFinishId>('matte');
@@ -68,6 +72,15 @@ export function PricingCalculator({ locations }: PricingCalculatorProps) {
       setPricing(null);
     }
   }, [studentsNumber, spreads, selectedLocationIds, selectedAddons, coverTypeId, coverFinishId]);
+
+  // Auto-update spreads when locations change and mode is 'auto'
+  useEffect(() => {
+    const locationCount = selectedLocationIds.length;
+    if (spreadMode === 'auto' && locationCount > 5) {
+      const recommendedSpreads = getRecommendedSpreadsForLocations(locationCount);
+      setSpreads(recommendedSpreads as SpreadCount);
+    }
+  }, [selectedLocationIds.length, spreadMode]);
 
   const handleContact = (manager: 'aruzhan' | 'dina') => {
     if (!pricing || !pricing.isValid || selectedLocationIds.length === 0 || studentsNumber <= 0) {
@@ -157,95 +170,8 @@ export function PricingCalculator({ locations }: PricingCalculatorProps) {
               {studentsNumber > 0}
             </Card>
 
-            {/* Spreads Selection */}
-            <Card>
-              <label className="label">
-                {t('pages.label')}
-                <span className="ml-1 text-gray-400 opacity-60">{t('pages.hint')}</span>
-              </label>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                {SPREADS_OPTIONS.map((spreadCount) => {
-                  const minSpreads = getMinSpreadsForLocations(selectedLocationIds.length);
-                  const isDisabled = spreadCount < minSpreads;
-                  
-                  return (
-                    <button
-                      key={spreadCount}
-                      onClick={() => setSpreads(spreadCount as SpreadCount)}
-                      disabled={isDisabled}
-                      className={`px-4 py-2 rounded-lg border-2 transition-colors ${
-                        isDisabled
-                          ? 'border-brand-border opacity-50 cursor-not-allowed'
-                          : spreads === spreadCount
-                            ? 'border-brand-accent bg-brand-accent text-white'
-                            : 'border-brand-border hover:border-brand-accent'
-                      }`}
-                      // title={isDisabled ? `Минимум ${minSpreads} разворотов для ${selectedLocationIds.length} локаций` : ''}
-                    >
-                      {spreadCount}
-                    </button>
-                  );
-                })}
-              </div>
-              <p className="mt-3 text-sm text-slate-500 whitespace-pre-wrap">
-                {t('spreadsHint', {
-                  locationCount: selectedLocationIds.length,
-                  spreads: spreads,
-                })}
-              </p>
-            </Card>
 
-            {/* Cover Type Selection */}
-            <Card>
-              <h3 className="label mb-3">{t('cover.label')}</h3>
-              <div className="space-y-2">
-                {COVER_TYPES.map((cover) => (
-                  <label
-                    key={cover.id}
-                    className="flex items-center gap-3 cursor-pointer p-3 border border-brand-border rounded-lg hover:bg-brand-surface transition-colors"
-                  >
-                    <input
-                      type="radio"
-                      name="coverType"
-                      value={cover.id}
-                      checked={coverTypeId === cover.id}
-                      onChange={() => setCoverTypeId(cover.id)}
-                      className="w-4 h-4 accent-brand-accent"
-                    />
-                    <span className="font-medium">
-                      {t(`cover.${cover.id === 'hard_classic' ? 'hardClassic' : 'comboCover'}`)}
-                    </span>
-                  </label>
-                ))}
-              </div>
-            </Card>
-
-            {/* Cover Finish Selection */}
-            <Card>
-              <label className="label">{t('coverFinish.label')}</label>
-              <select
-                value={coverFinishId}
-                onChange={(e) => setCoverFinishId(e.target.value as CoverFinishId)}
-                className="input w-full"
-              >
-                {COVER_FINISHES.map((finish) => {
-                  const finishKeyMap: Record<string, string> = {
-                    matte: 'matte',
-                    glossy: 'glossy',
-                    eco_leather: 'ecoLeather',
-                    diamond: 'diamond',
-                  };
-                  const key = finishKeyMap[finish.id];
-                  return (
-                    <option key={finish.id} value={finish.id}>
-                      {t(`coverFinish.${key}`)}
-                    </option>
-                  );
-                })}
-              </select>
-            </Card>
-
-            {/* Location Selection */}
+              {/* Location Selection */}
             <Card>
               <label className="label">{t('location.label')}</label>
               <div className="relative">
@@ -350,6 +276,249 @@ export function PricingCalculator({ locations }: PricingCalculatorProps) {
               )}
             </Card>
 
+
+
+
+
+
+
+
+            {/* Spreads Selection */}
+            <Card>
+              <label className="label">
+                {t('pages.label')}
+                <span className="ml-1 text-gray-400 opacity-60">{t('pages.hint')}</span>
+              </label>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {SPREADS_OPTIONS.map((spreadCount) => {
+                  const minSpreads = getMinSpreadsForLocations(selectedLocationIds.length);
+                  const isDisabled = spreadCount < minSpreads || spreadMode === 'auto';
+                  
+                  return (
+                    <button
+                      key={spreadCount}
+                      onClick={() => setSpreads(spreadCount as SpreadCount)}
+                      disabled={isDisabled}
+                      className={`px-4 py-2 rounded-lg border-2 transition-colors ${
+                        isDisabled
+                          ? 'border-brand-border opacity-50 cursor-not-allowed'
+                          : spreads === spreadCount
+                            ? 'border-brand-accent bg-brand-accent text-white'
+                            : 'border-brand-border hover:border-brand-accent'
+                      }`}
+                    >
+                      {spreadCount}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Mode selection for many locations */}
+              {selectedLocationIds.length > 5 && (
+                <div className="mt-4 space-y-2 p-3 border border-brand-border rounded-lg bg-brand-surface">
+                  <p className="text-sm font-medium text-brand-text mb-2">
+                    {t('spreads.modeLabel')}
+                  </p>
+                  <label className="flex items-center gap-2 cursor-pointer text-sm">
+                    <input
+                      type="radio"
+                      name="spreadMode"
+                      value="manual"
+                      checked={spreadMode === 'manual'}
+                      onChange={() => setSpreadMode('manual')}
+                      className="accent-brand-accent"
+                    />
+                    <span>{t('spreads.mode.manual')}</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer text-sm">
+                    <input
+                      type="radio"
+                      name="spreadMode"
+                      value="auto"
+                      checked={spreadMode === 'auto'}
+                      onChange={() => {
+                        setSpreadMode('auto');
+                        const recommendedSpreads = getRecommendedSpreadsForLocations(
+                          selectedLocationIds.length
+                        );
+                        setSpreads(recommendedSpreads as SpreadCount);
+                      }}
+                      className="accent-brand-accent"
+                    />
+                    <span>
+                      {t('spreads.mode.otherDynamic', {
+                        recommended: getRecommendedSpreadsForLocations(
+                          selectedLocationIds.length
+                        ),
+                      })}
+                    </span>
+                  </label>
+                </div>
+              )}
+
+              <p className="mt-3 text-sm text-slate-500 whitespace-pre-wrap">
+                {t('spreadsHint', {
+                  locationCount: selectedLocationIds.length,
+                  spreads: spreads,
+                })}
+              </p>
+            </Card>
+
+            {/* Cover Type Selection */}
+            <Card>
+              <h3 className="label mb-3">{t('cover.label')}</h3>
+              <div className="space-y-2">
+                {COVER_TYPES.map((cover) => (
+                  <label
+                    key={cover.id}
+                    className="flex items-center gap-3 cursor-pointer p-3 border border-brand-border rounded-lg hover:bg-brand-surface transition-colors"
+                  >
+                    <input
+                      type="radio"
+                      name="coverType"
+                      value={cover.id}
+                      checked={coverTypeId === cover.id}
+                      onChange={() => setCoverTypeId(cover.id)}
+                      className="w-4 h-4 accent-brand-accent"
+                    />
+                    <span className="font-medium">
+                      {t(`cover.${cover.id === 'hard_classic' ? 'hardClassic' : 'comboCover'}`)}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </Card>
+
+            {/* Cover Finish Selection */}
+            <Card>
+              <label className="label">{t('coverFinish.label')}</label>
+              <select
+                value={coverFinishId}
+                onChange={(e) => setCoverFinishId(e.target.value as CoverFinishId)}
+                className="input w-full"
+              >
+                {COVER_FINISHES.map((finish) => {
+                  const finishKeyMap: Record<string, string> = {
+                    matte: 'matte',
+                    glossy: 'glossy',
+                    eco_leather: 'ecoLeather',
+                    diamond: 'diamond',
+                  };
+                  const key = finishKeyMap[finish.id];
+                  return (
+                    <option key={finish.id} value={finish.id}>
+                      {t(`coverFinish.${key}`)}
+                    </option>
+                  );
+                })}
+              </select>
+            </Card>
+
+            {/* Location Selection
+            <Card>
+              <label className="label">{t('location.label')}</label>
+              <div className="relative">
+                <button
+                  onClick={() => setShowLocationDropdown(!showLocationDropdown)}
+                  className="input w-full text-left flex items-center justify-between"
+                  type="button"
+                >
+                  <span>
+                    {selectedLocationIds.length === 0
+                      ? t('location.selectPlaceholder')
+                      : `${selectedLocationIds.length} ${t('location.selected')}`}
+                  </span>
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d={showLocationDropdown ? 'M19 14l-7-7m0 0L5 14m7-7v12' : 'M19 14l-7 7m0 0l-7-7m7 7V3'}
+                    />
+                  </svg>
+                </button>
+
+                {showLocationDropdown && (
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-brand-border rounded-lg shadow-lg z-10 max-h-64 overflow-y-auto p-2 space-y-2">
+                    {locations
+                      .filter((l) => l.isActive)
+                      .map((location) => {
+                        const isSelected = selectedLocationIds.includes(location.id);
+                        return (
+                          <button
+                            key={location.id}
+                            type="button"
+                            onClick={() => {
+                              const nextLocationIds = isSelected
+                                ? selectedLocationIds.filter((id) => id !== location.id)
+                                : [...selectedLocationIds, location.id];
+                              
+                              setSelectedLocationIds(nextLocationIds);
+                              
+                              // Enforce spreads constraint: each location needs at least 1 spread
+                              const minSpreads = getMinSpreadsForLocations(nextLocationIds.length);
+                              if (spreads < minSpreads) {
+                                setSpreads(minSpreads as SpreadCount);
+                              }
+                            }}
+                            className={`flex w-full items-center gap-3 rounded-lg border px-4 py-3 text-left transition-colors ${
+                              isSelected
+                                ? 'border-brand-accent bg-brand-accent/10'
+                                : 'border-brand-border hover:border-brand-accent/60'
+                            }`}
+                          >
+                            <span
+                              className={`inline-flex h-4 w-4 items-center justify-center rounded-full border flex-shrink-0 ${
+                                isSelected
+                                  ? 'border-brand-accent bg-brand-accent'
+                                  : 'border-brand-border bg-white'
+                              }`}
+                            >
+                              {isSelected && <span className="h-2 w-2 rounded-full bg-white" />}
+                            </span>
+                            <span className="flex-1 font-medium">
+                              {locale === 'ru' ? location.nameRu : location.nameKk}
+                            </span>
+                          </button>
+                        );
+                      })}
+                  </div>
+                )}
+              </div>
+
+              {selectedLocationIds.length > 0 && (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {selectedLocationIds.map((id) => {
+                    const loc = locations.find((l) => l.id === id);
+                    return (
+                      <div
+                        key={id}
+                        className="inline-flex items-center gap-2 bg-brand-surface px-3 py-1 rounded-full text-sm"
+                      >
+                        <span>{locale === 'ru' ? loc?.nameRu : loc?.nameKk}</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const nextLocationIds = selectedLocationIds.filter((locId) => locId !== id);
+                            setSelectedLocationIds(nextLocationIds);
+                            
+                            // Enforce spreads constraint after removing location
+                            const minSpreads = getMinSpreadsForLocations(nextLocationIds.length);
+                            if (spreads < minSpreads) {
+                              setSpreads(minSpreads as SpreadCount);
+                            }
+                          }}
+                          className="text-brand-muted hover:text-brand-accent"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </Card> */}
+
             {/* Add-ons Selection */}
             <Card>
               <label className="label">{t('addons.title')}</label>
@@ -420,22 +589,22 @@ export function PricingCalculator({ locations }: PricingCalculatorProps) {
                       variant="primary"
                       size="lg"
                       className="w-full flex items-center justify-center gap-2"
-                      onClick={() => handleContact('aruzhan')}
-                      disabled={!pricing.isValid}
-                    >
-                      <WhatsAppIcon className="h-5 w-5" />
-                      {t('contact.managerAruzhan')}
-                    </Button>
-
-                    <Button
-                      variant="outline"
-                      size="lg"
-                      className="w-full flex items-center justify-center gap-2"
                       onClick={() => handleContact('dina')}
                       disabled={!pricing.isValid}
                     >
                       <WhatsAppIcon className="h-5 w-5" />
                       {t('contact.managerDina')}
+                    </Button>
+
+                    <Button
+                      variant="primary"
+                      size="lg"
+                      className="w-full flex items-center justify-center gap-2"
+                      onClick={() => handleContact('aruzhan')}
+                      disabled={!pricing.isValid}
+                    >
+                      <WhatsAppIcon className="h-5 w-5" />
+                      {t('contact.managerAruzhan')}
                     </Button>
                   </div>
                 </>

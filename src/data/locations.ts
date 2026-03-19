@@ -83,7 +83,7 @@ export const locations: Location[] = [
   {
     id: 'hippodrome',
     nameRu: 'Ипподром',
-    nameKk: 'Атты спорт стадиону',
+    nameKk: 'Ипподром ',
     imagePath: '/locations/11.jpg',
     isActive: true,
     sortOrder: 5,

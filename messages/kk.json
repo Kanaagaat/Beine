@@ -107,13 +107,13 @@
     "cover": {
       "label": "Виньетка түрі",
       "hardClassic": "Классикалық",
-      "comboCover": "Комби"
+      "comboCover": "Комби (журнал беттері)"
     },
     "coverFinish": {
       "label": "Мұқаба беті",
       "matte": "Мат",
       "glossy": "Жылтыр",
-      "ecoLeather": "Эко-тері",
+      "ecoLeather": "Под-кожа",
       "diamond": "Алмас"
     },
     "location": {

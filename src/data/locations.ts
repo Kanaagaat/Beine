@@ -68,17 +68,17 @@ export const locations: Location[] = [
     id: 'restaurant',
     nameRu: 'Ресторан',
     nameKk: 'Ресторан',
-    imagePath: '/locations/4.jpg',
+    imagePath: '/locations/rest.svg',
     isActive: true,
     sortOrder: 4,
     featuresRu: [
           'образы в стиле luxury', 
           'эстетичные локации', 
-          '10% скидка на выпускной банкет'],
+          ],
     featuresKk: [
           'luxury стиліндегі көріністер', 
           'эстетикалық орындар', 
-          '10% бітіру банкетіне жеңілдік'],
+          ],
   },
   {
     id: 'hippodrome',

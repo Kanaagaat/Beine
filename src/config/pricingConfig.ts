@@ -50,7 +50,7 @@ export const LOCATIONS_PRICES: Record<string, { oneHour: number; twoHours: numbe
   park: { oneHour: 0, twoHours: 0 },
   dune: { oneHour: 5000, twoHours: 5000 }, // TODO: support 0–5000 range UI later
   studio: { oneHour: 15000, twoHours: 30000 },
-  restaurant: { oneHour: 20000, twoHours: 30000 },
+  restaurant: { oneHour: 20000, twoHours: 40000 },
   hippodrome: { oneHour: 10000, twoHours: 20000 },
   forsage: { oneHour: 25000, twoHours: 50000 },
   jetCabin: { oneHour: 18000, twoHours: 36000 },
@@ -100,13 +100,13 @@ export function getRecommendedSpreadsForLocations(locationCount: number): number
 
 /**
  * Calculate location cost based on selected locations and student count
- * Rule: if studentsTotal > 15 use 2-hour price, else 1-hour price
+ * Rule: if studentsTotal > 20 use 2-hour price, else 1-hour price
  */
 export function calculateLocationsCostTotal(
   locationIds: string[],
   studentsTotal: number
 ): number {
-  const useTwoHour = studentsTotal > 15;
+  const useTwoHour = studentsTotal > 20;
   let total = 0;
 
   for (const id of locationIds) {
@@ -188,7 +188,7 @@ export function calculatePricing(input: PricingInput): PricingResult {
   // pricePerStudent = roundTo10(Z + coverCost + finishCost + spreadsCost + marginPerPaidAlbum)
   const X = locationsCostTotal + PHOTOGRAPHER_PRICE + addonsCost;
   const Z = X / paidCount;
-  const spreadsCost = spreads * PAGE_PRICE;
+  const spreadsCost = spreads * PAGE_PRICE + HARD_COVER_COST;
   const pricePerStudent = roundTo10(Z + coverCost + finishCost + spreadsCost + MARGIN_PER_PAID_ALBUM);
   const totalCost = pricePerStudent * paidCount;
 

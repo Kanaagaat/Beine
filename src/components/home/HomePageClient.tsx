@@ -20,13 +20,13 @@ export function HomePageClient() {
             {t('hero.subtitle')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/pricing">
-              <Button variant="primary" size="lg">
+            <Link href="/pricing" className="flex-1">
+              <Button variant="primary" size="lg" className='w-full  bg-white/10 border-white text-white hover:bg-white/20' >
                 {t('hero.ctaPrimary')}
               </Button>
             </Link>
-            <Link href="/contact">
-              <Button variant="outline" size="lg" className="bg-white/10 border-white text-white hover:bg-white/20">
+            <Link href="/contact" className='flex-1'>
+              <Button variant="outline" size="lg" className="w-full bg-white/10 border-white text-white hover:bg-white/20">
                 {t('hero.ctaSecondary')}
               </Button>
             </Link>

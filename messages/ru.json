@@ -107,13 +107,13 @@
     "cover": {
       "label": "Тип виньетки",
       "hardClassic": "Классическая",
-      "comboCover": "Комби"
+      "comboCover": "Комби (Журнальные страницы)"
     },
     "coverFinish": {
       "label": "Вид обложки",
       "matte": "Матовая",
       "glossy": "Глянцевая",
-      "ecoLeather": "Эко-кожа",
+      "ecoLeather": "Под-кожа",
       "diamond": "Алмазная"
     },
     "location": {

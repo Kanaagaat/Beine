@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import { ReactNode } from 'react';
 
 export const metadata: Metadata = {
-  title: 'Beine',
-  description: 'Виньетки и выпускные альбомы для классов в Алматы',
+  title: 'Выпускные виньетки и фотоальбомы в Алматы — фотостудия Beine',
+  description: 'Профессиональные виньетки и фотоальбомы выпускников в Алматы. Студийная фотосъёмка, локации, доставка альбомов, лимузин и бесплатные ЕНТ курсы.',
   icons: {
     icon: '/favicon.svg',
   },

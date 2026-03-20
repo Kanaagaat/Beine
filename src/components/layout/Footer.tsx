@@ -16,7 +16,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <img src="/icons/logo.svg" alt="Beine logo" className="h-8 w-8 invert" />
+              <img src="/icons/newlog.svg" alt="Beine logo" className="h-8 w-8 " />
               <h3 className="text-lg font-semibold">
                 {t('appName')}
               </h3>

@@ -78,7 +78,7 @@ export function buildInquiryMessage(
  */
 export function getWhatsAppUrl(message: string): string {
   const encodedMessage = encodeURIComponent(message);
-  return `https://wa.me/77476070385?text=${encodedMessage}`;
+  return `https://wa.me/77067004201?text=${encodedMessage}`;
 }
 
 /**
@@ -86,7 +86,7 @@ export function getWhatsAppUrl(message: string): string {
  */
 export function getWhatsAppUrlForAruzhan(message: string): string {
   const encodedMessage = encodeURIComponent(message);
-  return `https://wa.me/77476070385?text=${encodedMessage}`;
+  return `https://wa.me/77002741686?text=${encodedMessage}`;
 }
 
 /**

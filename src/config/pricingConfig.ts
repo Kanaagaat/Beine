@@ -50,13 +50,13 @@ export const LOCATIONS_PRICES: Record<string, { oneHour: number; twoHours: numbe
   park: { oneHour: 0, twoHours: 0 },
   dune: { oneHour: 5000, twoHours: 5000 }, // TODO: support 0–5000 range UI later
   studio: { oneHour: 15000, twoHours: 30000 },
-  restaurant: { oneHour: 15000, twoHours: 30000 },
-  hippodrome: { oneHour: 15000, twoHours: 30000 },
-  forsage: { oneHour: 15000, twoHours: 30000 },
+  restaurant: { oneHour: 20000, twoHours: 30000 },
+  hippodrome: { oneHour: 10000, twoHours: 20000 },
+  forsage: { oneHour: 25000, twoHours: 50000 },
   jetCabin: { oneHour: 18000, twoHours: 36000 },
   tennis: { oneHour: 25000, twoHours: 50000 },
-  aerodrome: { oneHour: 40000, twoHours: 80000 },
-  checkersOnSaina: { oneHour: 15000, twoHours: 30000 },
+  aerodrome: { oneHour: 50000, twoHours: 80000 },
+  checkersOnSaina: { oneHour: 60000, twoHours: 60000 },
   helicopter: null, // Not available - disable or show "On request"
 };
 

@@ -6,7 +6,7 @@ import { LanguageSwitcher } from './LanguageSwitcher';
 import { Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { getWhatsAppUrl } from '@/lib/messaging';
+import { getWhatsAppUrlForAruzhan, getWhatsAppUrlForDina } from '@/lib/messaging';
 import { WhatsAppIcon } from '@/components/ui/WhatsAppIcon';
 
 const { Link, usePathname } = routing;
@@ -27,7 +27,8 @@ export function Navbar() {
   ];
 
   const defaultMessage = 'Здравствуйте! Хочу заказать виньетки/альбомы в Алматы.';
-  const whatsappUrl = getWhatsAppUrl(defaultMessage);
+  const whatsappUrlAruzhan = getWhatsAppUrlForAruzhan(defaultMessage);
+  const whatsappUrlDina = getWhatsAppUrlForDina(defaultMessage);
 
   return (
     <nav className="sticky top-0 z-50 bg-brand-bg border-b border-brand-border shadow-md">
@@ -56,14 +57,30 @@ export function Navbar() {
             ))}
 
             <div className="flex items-center gap-2 ml-4 pl-4 border-l border-brand-border">
+              {/* Desktop WhatsApp Button - Aruzhan */}
               <a
-                href={whatsappUrl}
+                href={whatsappUrlAruzhan}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                aria-label="WhatsApp"
+                className="inline-flex items-center gap-2 rounded-full bg-green-500 px-4 py-2 text-sm font-medium text-white hover:bg-green-600 transition-colors"
+                aria-label="WhatsApp - Aružan"
+                title="Aružan"
               >
                 <WhatsAppIcon className="h-5 w-5" />
+                <span>Aružan</span>
+              </a>
+
+              {/* Desktop WhatsApp Button - Dina */}
+              <a
+                href={whatsappUrlDina}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-full bg-green-500 px-4 py-2 text-sm font-medium text-white hover:bg-green-600 transition-colors"
+                aria-label="WhatsApp - Dina"
+                title="Dina"
+              >
+                <WhatsAppIcon className="h-5 w-5" />
+                <span>Dina</span>
               </a>
             </div>
 
@@ -71,18 +88,30 @@ export function Navbar() {
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="md:hidden flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <a
-                href={whatsappUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 text-green-600"
-                aria-label="WhatsApp"
-              >
-                <WhatsAppIcon className="h-5 w-5" />
-              </a>
-            </div>
+          <div className="md:hidden flex items-center gap-2">
+            {/* Mobile WhatsApp Icon Button - Aruzhan */}
+            <a
+              href={whatsappUrlAruzhan}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-green-500 text-white hover:bg-green-600 transition-colors"
+              aria-label="WhatsApp - Aružan"
+              title="Aružan"
+            >
+              <WhatsAppIcon className="h-5 w-5" />
+            </a>
+
+            {/* Mobile WhatsApp Icon Button - Dina */}
+            <a
+              href={whatsappUrlDina}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-green-500 text-white hover:bg-green-600 transition-colors"
+              aria-label="WhatsApp - Dina"
+              title="Dina"
+            >
+              <WhatsAppIcon className="h-5 w-5" />
+            </a>
 
             <LanguageSwitcher />
 

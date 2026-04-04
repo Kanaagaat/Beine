@@ -199,7 +199,7 @@ export const locations: Location[] = [
     nameRu: 'Вертолёт',
     nameKk: 'Вертолёт',
     imagePath: '/locations/8.jpg',
-    isActive: true,
+    isActive: false,
     sortOrder: 11,
     featuresRu: [
       'дымовые эффекты ',

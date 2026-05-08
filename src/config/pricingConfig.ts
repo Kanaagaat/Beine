@@ -48,7 +48,7 @@ export const MARGIN_PER_PAID_ALBUM = 15000;
 // Rule: if studentsTotal > 15 use 2-hour price, else 1-hour price
 export const LOCATIONS_PRICES: Record<string, { oneHour: number; twoHours: number } | null> = {
   park: { oneHour: 0, twoHours: 0 },
-  dune: { oneHour: 5000, twoHours: 5000 }, // TODO: support 0–5000 range UI later
+  dune: { oneHour: 60000, twoHours: 60000 }, // TODO: support 0–5000 range UI later
   studio: { oneHour: 15000, twoHours: 30000 },
   restaurant: { oneHour: 20000, twoHours: 40000 },
   hippodrome: { oneHour: 10000, twoHours: 20000 },
